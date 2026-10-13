@@ -81,7 +81,7 @@ public class ZeusSet extends JavaPlugin {
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
         String owner = getConfig().getString("head-owner", "Zeus");
-        meta.setPlayerProfile(Bukkit.createPlayerProfile(owner));
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
 
         meta.displayName(name("⚡ Glowa Zeusa ⚡"));
         meta.lore(List.of(
