@@ -1,3 +1,4 @@
+
 package pl.zeus.zeusset;
 
 import net.kyori.adventure.text.Component;
@@ -19,6 +20,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.logging.Level;
 
 public class ZeusSet extends JavaPlugin {
 
@@ -63,9 +66,20 @@ public class ZeusSet extends JavaPlugin {
     }
 
     private void giveSet(Player player) {
-        giveOrDrop(player, createHelmet());
-        giveOrDrop(player, createChestplate());
-        giveOrDrop(player, createSword());
+        giveSafely(player, "glowa", this::createHelmet);
+        giveSafely(player, "tunika", this::createChestplate);
+        giveSafely(player, "miecz", this::createSword);
+    }
+
+    // Kazdy przedmiot tworzony osobno - jesli jeden sie wywroci, reszta dziala,
+    // a prawdziwy blad jest pokazany w czacie i w konsoli.
+    private void giveSafely(Player player, String what, Supplier<ItemStack> factory) {
+        try {
+            giveOrDrop(player, factory.get());
+        } catch (Throwable t) {
+            getLogger().log(Level.SEVERE, "Blad przy tworzeniu przedmiotu: " + what, t);
+            player.sendMessage(Component.text("Blad (" + what + "): " + t, NamedTextColor.RED));
+        }
     }
 
     private void giveOrDrop(Player player, ItemStack item) {
@@ -81,7 +95,11 @@ public class ZeusSet extends JavaPlugin {
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
         String owner = getConfig().getString("head-owner", "Zeus");
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+        try {
+            meta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+        } catch (Throwable t) {
+            getLogger().log(Level.WARNING, "Nie udalo sie ustawic skorki glowy dla: " + owner, t);
+        }
 
         meta.displayName(name("⚡ Glowa Zeusa ⚡"));
         meta.lore(List.of(
