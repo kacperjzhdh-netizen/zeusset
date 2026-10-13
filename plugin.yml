@@ -1,0 +1,14 @@
+name: ZeusSet
+version: '1.0.0'
+main: pl.zeus.zeusset.ZeusSet
+api-version: '1.21'
+description: Set Zeusa - zolta tunika, drewniany miecz i glowa Zeusa
+commands:
+  zeus:
+    description: Daje set Zeusa
+    usage: /zeus [gracz]
+    permission: zeus.give
+permissions:
+  zeus.give:
+    description: Pozwala uzywac komendy /zeus
+    default: op
